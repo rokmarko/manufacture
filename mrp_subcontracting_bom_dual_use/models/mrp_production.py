@@ -7,6 +7,13 @@ from odoo import fields, models
 class MrpProduction(models.Model):
     _inherit = "mrp.production"
 
+    product_id = fields.Many2one(
+        'product.product', 'Product',
+        domain="[('bom_ids', '!=', False), ('bom_ids.active', '=', True), ('bom_ids.type', 'in', ['normal', 'subcontract']), ('type', 'in', ['product', 'consu']), '|', ('company_id', '=', False), ('company_id', '=', company_id)]",
+        readonly=True, required=True, check_company=True,
+        states={'draft': [('readonly', False)]})
+
+
     # Overwrite the field domain for adding subcontracting BoMs with the check
     bom_id = fields.Many2one(
         domain="""[
